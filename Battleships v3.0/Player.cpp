@@ -24,11 +24,11 @@ Player::Player() {
 	}
 	//generating ships
 	ships.push_back(4);
-	for (int i = 0; i<2; i++)
+	for (int i = 0; i < 2; i++)
 		ships.push_back(3);
-	for (int i = 0; i<3; i++)
+	for (int i = 0; i < 3; i++)
 		ships.push_back(2);
-	for (int i = 0; i<4; i++)
+	for (int i = 0; i < 4; i++)
 		ships.push_back(1);
 	PlaceShipsOnBoard();
 	mShipCounter = ships.size();
@@ -37,68 +37,83 @@ Player::Player() {
 }
 Player::Player(int width, int length) {
 	counter++;
+	srand(time(NULL) + counter);
 	mMessage = "";
 	mWidth = width;
 	mLength = length;
 	vector<int> tempLength;
-	for (int i = 0; i<mLength; i++)
+	vector<ColorTile> tempTileLength;
+	ColorTile tempTile;
+	tempTile.color = 0;
+	tempTile.calculated = false;
+	for (int i = 0; i < mLength; i++) {
 		tempLength.push_back(0);
-	for (int i = 0; i<mWidth; i++)
+		tempTileLength.push_back(tempTile);
+	}
+	for (int i = 0; i < mWidth; i++) {
 		mBoard.push_back(tempLength);
+		mTiles.push_back(tempTileLength);
+	}
 	//generating ships
 	ships.push_back(4);
-	for (int i = 0; i<2; i++)
+	for (int i = 0; i < 2; i++)
 		ships.push_back(3);
-	for (int i = 0; i<3; i++)
+	for (int i = 0; i < 3; i++)
 		ships.push_back(2);
-	for (int i = 0; i<4; i++)
+	for (int i = 0; i < 4; i++)
 		ships.push_back(1);
 	PlaceShipsOnBoard();
 	mShipCounter = ships.size();
+	//generating color board
+	GenerateColorBoard();
 }
 void Player::DrawYourBoard() {
-	cout << "              ";
+	//drawing top line
+	cout << "                ";
 	for (int i = 0; i < mLength; i++)
 		cout << i;
 	cout << endl;
-	for (int i = 0; i<mWidth; i++) {
+	//drawing middle section
+	for (int i = 0; i < mWidth; i++) {
 		SetColor("black", 0);
-		cout << "            " << (char)('A' + i) << " ";
-		for (int j = 0; j<mLength; j++) {
+		cout << "              " << (char)('A' + i) << " ";
+		for (int j = 0; j < mLength; j++) {
 			switch (mBoard[i][j]) {
-			case 0: 
+			case 0:
 				SetColor("water", mTiles[i][j].color);
 				cout << "~"; break;
-			case 1: 
+			case 1:
 				SetColor("ship", mTiles[i][j].color);
 				cout << "#"; break;
-			case 2: 
+			case 2:
 				SetColor("shipDestroyed", mTiles[i][j].color);
 				cout << "X"; break;
-			case 3: 
+			case 3:
 				SetColor("missed", mTiles[i][j].color);
 				cout << "+"; break;
 			default: cout << "Tile not specified in Player.DrawBoardAll();"; break;
 			}
 		}
 		SetColor("black", 0);
-		cout << " " << (char)('A'+i) << endl;
+		cout << " " << (char)('A' + i) << endl;
 	}
+	//drawing bottom line
 	SetColor("black", 0);
-	cout << "              ";
+	cout << "                ";
 	for (int i = 0; i < mLength; i++)
 		cout << i;
 	cout << endl;
 }
 void Player::DrawEnemyBoard() {
-	//TODO: add coordinates for shooting guidance
-	cout << "              ";
+	//drawing top line
+	cout << "                ";
 	for (int i = 0; i < mLength; i++)
 		cout << i;
 	cout << endl;
+	//drawing middle section
 	for (int i = 0; i < mWidth; i++) {
 		SetColor("black", 0);
-		cout << "            " << (char)('A' + i) << " ";
+		cout << "              " << (char)('A' + i) << " ";
 		for (int j = 0; j < mLength; j++) {
 			switch (mBoard[i][j]) {
 			case 0:
@@ -119,8 +134,9 @@ void Player::DrawEnemyBoard() {
 		SetColor("black", 0);
 		cout << " " << (char)('A' + i) << endl;
 	}
+	//drawing bottom line
 	SetColor("black", 0);
-	cout << "              ";
+	cout << "                ";
 	for (int i = 0; i < mLength; i++)
 		cout << i;
 	cout << endl;
@@ -133,7 +149,7 @@ bool Player::CanShipBePlaced(Ship ship) {
 		//checking is done by checking all tiles 1 square away from ship (basically rectangle)
 		for (int i = ship.YFront - 1; i <= ship.YFront + 1; i++) {
 			for (int j = ship.XFront - 1; j <= ship.XFront + ship.Length; j++) {
-				if (i >= 0 && i<mWidth && j >= 0 && j<mLength)	//making sure indexes are not out of bounds
+				if (i >= 0 && i < mWidth && j >= 0 && j < mLength)	//making sure indexes are not out of bounds
 					if (mBoard[i][j] != 0)	//if any of the tiles are not water, then ship cannot be placed in that rectangle
 						return false;
 			}
@@ -145,7 +161,7 @@ bool Player::CanShipBePlaced(Ship ship) {
 			return false;
 		for (int i = ship.YFront - 1; i <= ship.YFront + ship.Length; i++) {
 			for (int j = ship.XFront - 1; j <= ship.XFront + 1; j++) {
-				if (i >= 0 && i<mWidth && j >= 0 && j<mLength)
+				if (i >= 0 && i < mWidth && j >= 0 && j < mLength)
 					if (mBoard[i][j] != 0)
 						return false;
 			}
@@ -154,14 +170,14 @@ bool Player::CanShipBePlaced(Ship ship) {
 	return true;
 }
 void Player::PlaceShipsOnBoard() {
-	for (int i = 0; i<ships.size(); i++) {
+	for (int i = 0; i < ships.size(); i++) {
 		//randomizing coordinates until ship can be placed
 		do {
 			ships[i].XFront = rand() % mLength;
 			ships[i].YFront = rand() % mWidth;
 			ships[i].Dir = rand() % 2;
 		} while (!CanShipBePlaced(ships[i]));
-		
+
 		//placing the ship if horizontal
 		if (ships[i].Dir == 0)
 			for (int j = ships[i].XFront; j < ships[i].XFront + ships[i].Length; j++)
@@ -183,10 +199,10 @@ void Player::RevealShip(Ship ship) {
 						mBoard[i][j] = 3;
 	}
 	//vertical
-	else{
-		for(int i=ship.YFront-1; i<=ship.YFront+ship.Length; i++)
-			for(int j=ship.XFront-1; j<=ship.XFront+1; j++)
-				if(i>=0 && i<mWidth && j>=0 && j<mLength)
+	else {
+		for (int i = ship.YFront - 1; i <= ship.YFront + ship.Length; i++)
+			for (int j = ship.XFront - 1; j <= ship.XFront + 1; j++)
+				if (i >= 0 && i < mWidth && j >= 0 && j < mLength)
 					if (mBoard[i][j] != 2) //Reveal ship method only changes tiles that are not shipDestroyed
 						mBoard[i][j] = 3;
 	}
@@ -200,7 +216,7 @@ bool Player::CheckIfShipIsDestroyed(Ship ship) {
 				return false;
 	}
 	//vertical
-	else{
+	else {
 		for (int i = ship.YFront; i < ship.YFront + ship.Length; i++)
 			if (mBoard[i][ship.XFront] != 2)
 				return false;
@@ -213,7 +229,7 @@ void Player::RevealShipsIfDestroyed() {
 		if (CheckIfShipIsDestroyed(ships[i])) {
 			//if ship is destroyed, then a method that changes surrounding tiles to missed is called
 			RevealShip(ships[i]);
-			//adding message that ship was destroyed only once
+			//making sure that ship destruction message is displayed only once per ship
 			if (!ships[i].DestroyMessageAnnounced) {
 				mMessage += ships[i].name + " is destroyed!";
 				mShipCounter--;
@@ -225,7 +241,7 @@ void Player::RevealShipsIfDestroyed() {
 bool Player::CheckIfCanShoot(int y, int x) {
 	//a shot can be made if it is not out of bounds and the tiles are either water or ship(that player doesn't know about)
 	if (y >= 0 && y < mWidth && x >= 0 && x < mLength) {
-		if (mBoard[y][x] == 0 || mBoard[y][x]==1)
+		if (mBoard[y][x] == 0 || mBoard[y][x] == 1)
 			return true;
 	}
 	return false;
@@ -259,18 +275,18 @@ pair<int, int> Player::StringToIntCoordsConverter(string coord) {
 	bool yIntSet = false, xIntSet = false;
 	/*
 		cheking if string is valid by looking at it's length.
-		Valid input examples: B1, 2C, 11d, 0a, 5n 
+		Valid input examples: B1, 2C, 11d, 0a, 5n
 		Minimum length = char(1 symbol) + digit(1 symbol)
 		Maximum length = char(1 symbol) + digits(ceil(log10(maxCoordinate))+1)
 	*/
 	if (coord.length() >= 2 && coord.length() <= (ceil(log10(mWidth)) + 1)) {
 		//logic when/if the first element is symbol coordinate
-		if ((coord[0] >= 'a' && coord[0] <= 'z') || (coord[0] >= 'A' && coord[0] <= 'Z')) {
-			if (coord[0] >= 'a' && coord[0] <= 'z') {
+		if ((coord[0] >= 'a' && coord[0] <= 'z' + mWidth) || (coord[0] >= 'A' && coord[0] <= 'Z' + mWidth)) {
+			if (coord[0] >= 'a' && coord[0] <= 'z' + mWidth) {
 				yInt = coord[0] - 'a';
 				yIntSet = true;
 			}
-			else if (coord[0] >= 'A' && coord[0] <= 'Z') {
+			else if (coord[0] >= 'A' && coord[0] <= 'Z' + mWidth) {
 				yInt = coord[0] - 'A';
 				yIntSet = true;
 			}
@@ -286,12 +302,12 @@ pair<int, int> Player::StringToIntCoordsConverter(string coord) {
 			}
 		}
 		//logic when/if the last element is symbol coordinate
-		else if ((coord[coord.length() - 1] >= 'a' && coord[coord.length() - 1] <= 'z') || (coord[coord.length() - 1] >= 'A' && coord[coord.length() - 1] <= 'Z')) {
-			if (coord[coord.length() - 1] >= 'a' && coord[coord.length() - 1] <= 'z') {
+		else if ((coord[coord.length() - 1] >= 'a' && coord[coord.length() - 1] <= 'z' + mWidth) || (coord[coord.length() - 1] >= 'A' && coord[coord.length() - 1] <= 'Z' + mWidth)) {
+			if (coord[coord.length() - 1] >= 'a' && coord[coord.length() - 1] <= 'z' + mWidth) {
 				yInt = coord[coord.length() - 1] - 'a';
 				yIntSet = true;
 			}
-			else if (coord[coord.length() - 1] >= 'A' && coord[coord.length() - 1] <= 'Z') {
+			else if (coord[coord.length() - 1] >= 'A' && coord[coord.length() - 1] <= 'Z' + mWidth) {
 				yInt = coord[coord.length() - 1] - 'A';
 				yIntSet = true;
 			}
@@ -326,14 +342,14 @@ bool Player::CheckIfLost() {
 	if (mShipCounter == 0) return true;
 	else return false;
 }
-int Player::GetWidth() const{
+int Player::GetWidth() const {
 	return mWidth;
 }
-int Player::GetLength() const{
+int Player::GetLength() const {
 	return mLength;
 }
 void Player::SetColor(string object, int color) {
-	int bgValue=0, charValue=0;
+	int bgValue = 0, charValue = 0;
 
 	/*
 		Blue color values (from darkest to lightest):
@@ -341,7 +357,6 @@ void Player::SetColor(string object, int color) {
 			143 - light blue
 			47 - cyan
 			175 - light cyan
-
 	*/
 
 	if (object != "black") {
@@ -357,7 +372,7 @@ void Player::SetColor(string object, int color) {
 		}
 
 		//setting character values
-		if(object=="water"){
+		if (object == "water") {
 			switch (color) {
 			case 0: charValue = 2; break;
 			case 1: charValue = 10; break;
@@ -381,40 +396,49 @@ void Player::SetColor(string object, int color) {
 	}
 
 	HANDLE hcon = GetStdHandle(STD_OUTPUT_HANDLE);
-	SetConsoleTextAttribute(hcon, bgValue+charValue);
+	SetConsoleTextAttribute(hcon, bgValue + charValue);
 }
 void Player::GenerateColorBoard() {
-	  
 	/*
 		placing random seeds
 	*/
-	int tempY, tempX;
+	pair<int, int> tempPair;
+	vector<pair<int, int> > seeds;
+
 	for (int i = 0; i < mColorSeeds; i++) {
 		int y, x, tempColor;
 		tempColor = rand() % (mColorMax - mColorMin + 1) + mColorMin;
+		/*
+			generating seeds first and only after that will call recursion
+			to avoid infinite loop (because all tiles would have been calcualted)
+		*/
 		do {
 			//substracting 1 avoid calling recursion out of bounds
-			y = rand() % (mWidth-1);
+			y = rand() % (mWidth - 1);
 			x = rand() % mLength;
 		} while (mTiles[y][x].calculated);
-
 		mTiles[y][x].color = tempColor;
 		mTiles[y][x].calculated = true;
-		int tempDepth = 0;
-		GenerateColorBoardRecursion(y+1, x, tempDepth);
+		tempPair.first = y;
+		tempPair.second = x;
+		seeds.push_back(tempPair);
 	}
-
+	/*
+		using seeds to fill the board
+	*/
+	for (int i = 0; i < seeds.size(); i++) {
+		int tempDepth = 0;
+		GenerateColorBoardRecursion(seeds[i].first, seeds[i].second, seeds[i].first + 1, seeds[i].second);
+	}
 	/*
 		filling remaining board
 	*/
 	for (int i = 0; i < mWidth; i++) {
-		for (int j = 0; j < mLength; j++) {
-			int tempDepth = 0;
-			GenerateColorBoardRecursion(i, j, tempDepth);
-		}
+		for (int j = 0; j < mLength; j++)
+			GenerateColorBoardRecursion(i, j, i, j);
 	}
 	/*
-		normalizing values and randomizing colors that are between two distic
+		normalizing values and randomizing colors that are on the edge of two different blue shades
 	*/
 	for (int i = 0; i < mWidth; i++) {
 		for (int j = 0; j < mLength; j++) {
@@ -422,32 +446,40 @@ void Player::GenerateColorBoard() {
 		}
 	}
 }
-void Player::GenerateColorBoardRecursion(int y, int x, int &depth) {
+void Player::GenerateColorBoardRecursion(int y, int x, int yOrigin, int xOrigin) {
 	/*
 		depth parameter prevents single seed domination
 	*/
-	if (y >= 0 && y < mWidth && x >= 0 && x < mLength && depth < recursionDepth) {
-		depth++;
+	if (y >= 0 && y < mWidth && x >= 0 && x < mLength && sqrt(pow(yOrigin - y, 2) + pow(xOrigin - x, 2)) < recursionDepth) {
 		if (!mTiles[y][x].calculated) {
 			mTiles[y][x].color = SurroundingTilesAverage(y, x);
 			int temp;
+			/*
+				loop guarantees that generated values are valid
+			*/
 			do {
 				/*
-					making change less frequent
+					making color value jump less frequent
 				*/
 				temp = rand() % 5;
 				switch (temp) {
-					case 0: temp = -1; break;
-					case 4: temp = 1; break;
-					default: temp = 0; break;
+				case 0: temp = -1; break;
+				case 4: temp = 1; break;
+				default: temp = 0; break;
 				}
 			} while (!(mTiles[y][x].color + temp >= mColorMin && mTiles[y][x].color + temp <= mColorMax));
 			mTiles[y][x].color += temp;
 			mTiles[y][x].calculated = true;
 
+			GenerateColorBoardRecursion(y - 1, x, yOrigin, xOrigin);
+			GenerateColorBoardRecursion(y, x + 1, yOrigin, xOrigin);
+			GenerateColorBoardRecursion(y + 1, x, yOrigin, xOrigin);
+			GenerateColorBoardRecursion(y, x - 1, yOrigin, xOrigin);
 			/*
-				randomizing the direction of recursion
-			*/
+
+				//randomizing the direction of recursion
+				//It did not work. For some reason recursion tends to strech vertically or horizontally
+
 			vector<int> order;
 			for (int i = 0; i < 4; i++)
 				order.push_back(i);
@@ -455,13 +487,14 @@ void Player::GenerateColorBoardRecursion(int y, int x, int &depth) {
 			random_shuffle(order.begin(), order.end());
 			for (int i = 0; i < 4; i++) {
 				switch (i) {
-					case 0: this->GenerateColorBoardRecursion(y - 1, x, depth); break;
-					case 1: this->GenerateColorBoardRecursion(y, x + 1, depth); break;
-					case 2: this->GenerateColorBoardRecursion(y + 1, x, depth); break;
-					case 3: this->GenerateColorBoardRecursion(y, x - 1, depth); break;
+					case 0: this->GenerateColorBoardRecursion(y - 1, x, yOrigin, xOrigin, depth); break;
+					case 1: this->GenerateColorBoardRecursion(y, x + 1, yOrigin, xOrigin , depth); break;
+					case 2: this->GenerateColorBoardRecursion(y + 1, x, yOrigin, xOrigin, depth); break;
+					case 3: this->GenerateColorBoardRecursion(y, x - 1,yOrigin, xOrigin, depth); break;
 					default: break;
 				}
 			}
+			*/
 		}
 	}
 }
@@ -470,7 +503,7 @@ int Player::SurroundingTilesAverage(int y, int x) {
 	int sum = 0, tileCount = 0;
 	for (int i = y - 1; i <= y + 1; i++) {
 		for (int j = x - 1; j <= x + 1; j++) {
-			if (j >= 0 && j < mWidth && i >= 0 && i < mLength) {
+			if (i >= 0 && i < mWidth && j >= 0 && j < mLength) {
 				if (mTiles[i][j].calculated) {
 					sum += mTiles[i][j].color;
 					tileCount++;
@@ -479,23 +512,28 @@ int Player::SurroundingTilesAverage(int y, int x) {
 		}
 	}
 	//for some reason at element [0][0] it counts zero tiles after filling remaining board in GenerateColorBoard
-	if(tileCount!=0) return round(sum*1.0 / tileCount);
+	if (tileCount != 0) return round(sum*1.0 / tileCount);
 	else return round((1.0*mColorMax - mColorMin) / 2);
 }
 void Player::DEBUGTILES() {
 	for (int i = 0; i < mWidth; i++) {
 		for (int j = 0; j < mLength; j++) {
-			cout << mTiles[i][j].color;
+			cout << mTiles[i][j].calculated;
 		}
 		cout << endl;
 	}
 }
 int Player::RandomizeColorTranzitions(int color) {
+
+	/*
+		this function randomizes tile colors that are in transition with each other
+		e.g. tile with value 5 will be changed into 4 or 6
+	*/
 	int temp = rand() % 2;
 	switch (color) {
-	case 0: return 0; 
+	case 0: return 0;
 	case 1: return 1;
-	case 2: 
+	case 2:
 		if (temp == 0) return 1;
 		else return 2;
 	case 3: return 2;

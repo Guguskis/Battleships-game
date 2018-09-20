@@ -37,9 +37,9 @@ private:
 	int mLength, mWidth, mShipCounter;
 	/*
 		recommendations for tweaking these settings:
-			mColorSeeds*recursionDepths>=(mWidth*mLength)/2
+			
 	*/
-	int mColorSeeds=10, mColorMin = 0, mColorMax = 8, recursionDepth=10;
+	int mColorSeeds=15, mColorMin = 0, mColorMax = 8, recursionDepth=30;
 	static int counter;
 	string mMessage;
 	vector<Ship> ships;
@@ -56,7 +56,7 @@ private:
 	void RevealShipsIfDestroyed();
 	pair<int, int> StringToIntCoordsConverter(string);
 	void GenerateColorBoard();
-	void GenerateColorBoardRecursion(int, int, int&);
+	void GenerateColorBoardRecursion(int, int, int, int);
 	int SurroundingTilesAverage(int, int);
 	int RandomizeColorTranzitions(int);
 };
