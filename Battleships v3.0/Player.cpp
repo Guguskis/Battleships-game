@@ -9,8 +9,8 @@ Player::Player() {
 	srand(time(NULL) + counter);
 	mMessage = "";
 	mWidth = mLength = 10;
-	vector<int> tempLength;
-	vector<ColorTile> tempTileLength;
+	std::vector<int> tempLength;
+	std::vector<ColorTile> tempTileLength;
 	ColorTile tempTile;
 	tempTile.color = 0;
 	tempTile.calculated = false;
@@ -41,8 +41,8 @@ Player::Player(int width, int length) {
 	mMessage = "";
 	mWidth = width;
 	mLength = length;
-	vector<int> tempLength;
-	vector<ColorTile> tempTileLength;
+	std::vector<int> tempLength;
+	std::vector<ColorTile> tempTileLength;
 	ColorTile tempTile;
 	tempTile.color = 0;
 	tempTile.calculated = false;
@@ -69,77 +69,77 @@ Player::Player(int width, int length) {
 }
 void Player::DrawYourBoard() {
 	//drawing top line
-	cout << "                ";
+	std::cout << "                ";
 	for (int i = 0; i < mLength; i++)
-		cout << i;
-	cout << endl;
+		std::cout << i;
+	std::cout << std::endl;
 	//drawing middle section
 	for (int i = 0; i < mWidth; i++) {
 		SetColor("black", 0);
-		cout << "              " << (char)('A' + i) << " ";
+		std::cout << "              " << (char)('A' + i) << " ";
 		for (int j = 0; j < mLength; j++) {
 			switch (mBoard[i][j]) {
 			case 0:
 				SetColor("water", mTiles[i][j].color);
-				cout << "~"; break;
+				std::cout << "~"; break;
 			case 1:
 				SetColor("ship", mTiles[i][j].color);
-				cout << "#"; break;
+				std::cout << "#"; break;
 			case 2:
 				SetColor("shipDestroyed", mTiles[i][j].color);
-				cout << "X"; break;
+				std::cout << "X"; break;
 			case 3:
 				SetColor("missed", mTiles[i][j].color);
-				cout << "+"; break;
-			default: cout << "Tile not specified in Player.DrawBoardAll();"; break;
+				std::cout << "+"; break;
+			default: std::cout << "Tile not specified in Player.DrawBoardAll();"; break;
 			}
 		}
 		SetColor("black", 0);
-		cout << " " << (char)('A' + i) << endl;
+		std::cout << " " << (char)('A' + i) << std::endl;
 	}
 	//drawing bottom line
 	SetColor("black", 0);
-	cout << "                ";
+	std::cout << "                ";
 	for (int i = 0; i < mLength; i++)
-		cout << i;
-	cout << endl;
+		std::cout << i;
+	std::cout << std::endl;
 }
 void Player::DrawEnemyBoard() {
 	//drawing top line
-	cout << "                ";
+	std::cout << "                ";
 	for (int i = 0; i < mLength; i++)
-		cout << i;
-	cout << endl;
+		std::cout << i;
+	std::cout << std::endl;
 	//drawing middle section
 	for (int i = 0; i < mWidth; i++) {
 		SetColor("black", 0);
-		cout << "              " << (char)('A' + i) << " ";
+		std::cout << "              " << (char)('A' + i) << " ";
 		for (int j = 0; j < mLength; j++) {
 			switch (mBoard[i][j]) {
 			case 0:
 				SetColor("water", mTiles[i][j].color);
-				cout << "~"; break;
+				std::cout << "~"; break;
 			case 1:
 				SetColor("water", mTiles[i][j].color);
-				cout << "~"; break;
+				std::cout << "~"; break;
 			case 2:
 				SetColor("shipDestroyed", mTiles[i][j].color);
-				cout << "X"; break;
+				std::cout << "X"; break;
 			case 3:
 				SetColor("missed", mTiles[i][j].color);
-				cout << "+"; break;
-			default: cout << "Tile not specified in Player.DrawBoardAll();"; break;
+				std::cout << "+"; break;
+			default: std::cout << "Tile not specified in Player.DrawBoardAll();"; break;
 			}
 		}
 		SetColor("black", 0);
-		cout << " " << (char)('A' + i) << endl;
+		std::cout << " " << (char)('A' + i) << std::endl;
 	}
 	//drawing bottom line
 	SetColor("black", 0);
-	cout << "                ";
+	std::cout << "                ";
 	for (int i = 0; i < mLength; i++)
-		cout << i;
-	cout << endl;
+		std::cout << i;
+	std::cout << std::endl;
 }
 bool Player::CanShipBePlaced(Ship ship) {
 	//horizontal
@@ -178,7 +178,7 @@ void Player::PlaceShipsOnBoard() {
 			ships[i].Dir = rand() % 2;
 		} while (!CanShipBePlaced(ships[i]));
 
-		//placing the ship if horizontal
+		//plastd::cing the ship if horizontal
 		if (ships[i].Dir == 0)
 			for (int j = ships[i].XFront; j < ships[i].XFront + ships[i].Length; j++)
 				mBoard[ships[i].YFront][j] = 1;
@@ -246,9 +246,9 @@ bool Player::CheckIfCanShoot(int y, int x) {
 	}
 	return false;
 }
-bool Player::CheckIfCanShoot(string coord) {
+bool Player::CheckIfCanShoot(std::string coord) {
 	//method that takes input as a string, converts it to integer coordinates and calls another shoot method
-	pair<int, int> temp = StringToIntCoordsConverter(coord);
+	std::pair<int, int> temp = StringToIntCoordsConverter(coord);
 	if (CheckIfCanShoot(temp.first, temp.second)) return true;
 	else return false;
 }
@@ -259,17 +259,17 @@ void Player::Shoot(int y, int x) {
 	default: break;
 	}
 }
-void Player::Shoot(string coord) {
-	pair<int, int> temp = StringToIntCoordsConverter(coord);
+void Player::Shoot(std::string coord) {
+	std::pair<int, int> temp = StringToIntCoordsConverter(coord);
 	Shoot(temp.first, temp.second);
 }
-string Player::DisplayMessage() {
+std::string Player::DisplayMessage() {
 	return mMessage;
 }
 void Player::ClearMessage() {
 	mMessage = "";
 }
-pair<int, int> Player::StringToIntCoordsConverter(string coord) {
+std::pair<int, int> Player::StringToIntCoordsConverter(std::string coord) {
 	//this method converts string input into two integers 
 	int yInt, xInt;
 	bool yIntSet = false, xIntSet = false;
@@ -324,7 +324,7 @@ pair<int, int> Player::StringToIntCoordsConverter(string coord) {
 		}
 		//returning a valid output only if both coordinates were extracted
 		if (yIntSet && xIntSet) {
-			pair<int, int> temp;
+			std::pair<int, int> temp;
 			temp.first = yInt;
 			temp.second = xInt;
 			return temp;
@@ -332,7 +332,7 @@ pair<int, int> Player::StringToIntCoordsConverter(string coord) {
 	}
 	//coordinates (-1, -1) are not valid coordinates, thus (if string input is invalid) those coordinates are returned 
 	else {
-		pair<int, int> temp;
+		std::pair<int, int> temp;
 		temp.first = -1;
 		temp.second = -1;
 		return temp;
@@ -348,7 +348,7 @@ int Player::GetWidth() const {
 int Player::GetLength() const {
 	return mLength;
 }
-void Player::SetColor(string object, int color) {
+void Player::SetColor(std::string object, int color) {
 	int bgValue = 0, charValue = 0;
 
 	/*
@@ -400,10 +400,10 @@ void Player::SetColor(string object, int color) {
 }
 void Player::GenerateColorBoard() {
 	/*
-		placing random seeds
+		plastd::cing random seeds
 	*/
-	pair<int, int> tempPair;
-	vector<pair<int, int> > seeds;
+	std::pair<int, int> tempPair;
+	std::vector<std::pair<int, int> > seeds;
 
 	for (int i = 0; i < mColorSeeds; i++) {
 		int y, x, tempColor;
@@ -471,19 +471,16 @@ void Player::GenerateColorBoardRecursion(int y, int x, int yOrigin, int xOrigin)
 			mTiles[y][x].color += temp;
 			mTiles[y][x].calculated = true;
 
-			GenerateColorBoardRecursion(y - 1, x, yOrigin, xOrigin);
-			GenerateColorBoardRecursion(y, x + 1, yOrigin, xOrigin);
-			GenerateColorBoardRecursion(y + 1, x, yOrigin, xOrigin);
-			GenerateColorBoardRecursion(y, x - 1, yOrigin, xOrigin);
+			this->GenerateColorBoardRecursion(y - 1, x, yOrigin, xOrigin);
+			this->GenerateColorBoardRecursion(y, x + 1, yOrigin, xOrigin);
+			this->GenerateColorBoardRecursion(y + 1, x, yOrigin, xOrigin);
+			this->GenerateColorBoardRecursion(y, x - 1, yOrigin, xOrigin);
 			/*
-
 				//randomizing the direction of recursion
 				//It did not work. For some reason recursion tends to strech vertically or horizontally
-
-			vector<int> order;
+			std::vector<int> order;
 			for (int i = 0; i < 4; i++)
 				order.push_back(i);
-
 			random_shuffle(order.begin(), order.end());
 			for (int i = 0; i < 4; i++) {
 				switch (i) {
@@ -515,14 +512,6 @@ int Player::SurroundingTilesAverage(int y, int x) {
 	if (tileCount != 0) return round(sum*1.0 / tileCount);
 	else return round((1.0*mColorMax - mColorMin) / 2);
 }
-void Player::DEBUGTILES() {
-	for (int i = 0; i < mWidth; i++) {
-		for (int j = 0; j < mLength; j++) {
-			cout << mTiles[i][j].calculated;
-		}
-		cout << endl;
-	}
-}
 int Player::RandomizeColorTranzitions(int color) {
 
 	/*
@@ -545,7 +534,7 @@ int Player::RandomizeColorTranzitions(int color) {
 	case 7: return 5;
 	case 8: return 6;
 	default:
-		cout << "\nColor value " << color << " not specified in RandomizeColorTranzitions function. Returning -1\n";
+		std::cout << "\nColor value " << color << " not specified in RandomizeColorTranzitions function. Returning -1\n";
 		return -1;
 	}
 }

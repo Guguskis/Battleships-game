@@ -8,14 +8,14 @@
 #include "Ship.h"
 #include <Windows.h>
 #include <algorithm>
-using namespace std;
+
 
 #ifndef PLAYER_H
 #define PLAYER_H
 
 class Player {
 public:
-	vector<vector<int> > mBoard;
+	std::vector<std::vector<int> > mBoard;
 	// 0 - water, 1 - ship, 2 - shipDestroyed, 3 - missed
 	//	-	-	-	-	-
 	Player();
@@ -24,37 +24,37 @@ public:
 	void DrawEnemyBoard();
 	void RevealShip(Ship);
 	bool CheckIfCanShoot(int, int);
-	bool CheckIfCanShoot(string);
+	bool CheckIfCanShoot(std::string);
 	void Shoot(int, int);
-	void Shoot(string);
-	string DisplayMessage();
+	void Shoot(std::string);
+	std::string DisplayMessage();
 	void ClearMessage();
 	bool CheckIfLost();
 	int GetWidth() const;
 	int GetLength() const;
-	void DEBUGTILES();
+	int GetRemainingShipCount();
 private:
 	int mLength, mWidth, mShipCounter;
 	/*
-		recommendations for tweaking these settings:
-			
+		recursion depth: the radius of how far recursion will work around the seed
 	*/
-	int mColorSeeds=15, mColorMin = 0, mColorMax = 8, recursionDepth=30;
+	int mColorSeeds = 3, mColorMin = 0, mColorMax = 8, recursionDepth = 4;
 	static int counter;
-	string mMessage;
-	vector<Ship> ships;
+	std::string mMessage;
+	std::vector<Ship> ships;
 	struct ColorTile {
 		int color;
 		bool calculated;
 	};
-	vector<vector<ColorTile> > mTiles;
+	std::vector<std::vector<ColorTile> > mTiles;
 	//	-	-	-	-	-
 	bool CanShipBePlaced(Ship);
 	void PlaceShipsOnBoard();
-	void SetColor(string, int);
+	void SetColor(std::string, int);
 	bool CheckIfShipIsDestroyed(Ship);
 	void RevealShipsIfDestroyed();
-	pair<int, int> StringToIntCoordsConverter(string);
+	std::pair<int, int> StringToIntCoordsConverter(std::string);
+	//Functions to initialize board terrain
 	void GenerateColorBoard();
 	void GenerateColorBoardRecursion(int, int, int, int);
 	int SurroundingTilesAverage(int, int);
