@@ -431,12 +431,37 @@ void Player::GenerateColorBoard() {
 		GenerateColorBoardRecursion(seeds[i].first, seeds[i].second, seeds[i].first + 1, seeds[i].second);
 	}
 	/*
-		filling remaining board
+		filling remaining board 
+		(applied experimental change that seems to work, 
+		but idk for sure if it won't infinite loop)
 	*/
-	for (int i = 0; i < mWidth; i++) {
-		for (int j = 0; j < mLength; j++)
-			GenerateColorBoardRecursion(i, j, i, j);
-	}
+	int DisplayErrorMessageCounter = 0;
+	bool unprocessedTileRemains = false;
+	do {
+		DisplayErrorMessageCounter++;
+		if(DisplayErrorMessageCounter>1000)
+			std::cout << "If you see this, then program is stuck at Player::GenerateColorBoard -> while loop at filling the board.\n This shouldn't happen\nRESTART PROGRAM";
+		
+		unprocessedTileRemains = false;
+		for (int i = 0; i < mWidth; i++) {
+			for (int j = 0; j < mLength; j++)
+				if (mTiles[i][j].calculated) {
+					GenerateColorBoardRecursion(i + 1, j, i, j);
+					GenerateColorBoardRecursion(i, j + 1, i, j);
+					GenerateColorBoardRecursion(i - 1, j, i, j);
+					GenerateColorBoardRecursion(i, j - 1, i, j);
+				}
+		}
+		for (int i = 0; i < mWidth; i++) {
+			for (int j = 0; j < mLength; j++)
+				if (!mTiles[i][j].calculated) {
+					unprocessedTileRemains = true;
+					i = mWidth;
+					j = mLength;
+				}
+		}
+	} while (unprocessedTileRemains);
+
 	/*
 		normalizing values and randomizing colors that are on the edge of two different blue shades
 	*/
@@ -448,7 +473,7 @@ void Player::GenerateColorBoard() {
 }
 void Player::GenerateColorBoardRecursion(int y, int x, int yOrigin, int xOrigin) {
 	/*
-		depth parameter prevents single seed domination
+		recursionDepth prevents single seed domination
 	*/
 	if (y >= 0 && y < mWidth && x >= 0 && x < mLength && sqrt(pow(yOrigin - y, 2) + pow(xOrigin - x, 2)) < recursionDepth) {
 		if (!mTiles[y][x].calculated) {
@@ -459,7 +484,7 @@ void Player::GenerateColorBoardRecursion(int y, int x, int yOrigin, int xOrigin)
 			*/
 			do {
 				/*
-					making color value jump less frequent
+					changing the frequency of how often color value jumps
 				*/
 				temp = rand() % 5;
 				switch (temp) {
@@ -470,28 +495,10 @@ void Player::GenerateColorBoardRecursion(int y, int x, int yOrigin, int xOrigin)
 			} while (!(mTiles[y][x].color + temp >= mColorMin && mTiles[y][x].color + temp <= mColorMax));
 			mTiles[y][x].color += temp;
 			mTiles[y][x].calculated = true;
-
 			this->GenerateColorBoardRecursion(y - 1, x, yOrigin, xOrigin);
 			this->GenerateColorBoardRecursion(y, x + 1, yOrigin, xOrigin);
 			this->GenerateColorBoardRecursion(y + 1, x, yOrigin, xOrigin);
 			this->GenerateColorBoardRecursion(y, x - 1, yOrigin, xOrigin);
-			/*
-				//randomizing the direction of recursion
-				//It did not work. For some reason recursion tends to strech vertically or horizontally
-			std::vector<int> order;
-			for (int i = 0; i < 4; i++)
-				order.push_back(i);
-			random_shuffle(order.begin(), order.end());
-			for (int i = 0; i < 4; i++) {
-				switch (i) {
-					case 0: this->GenerateColorBoardRecursion(y - 1, x, yOrigin, xOrigin, depth); break;
-					case 1: this->GenerateColorBoardRecursion(y, x + 1, yOrigin, xOrigin , depth); break;
-					case 2: this->GenerateColorBoardRecursion(y + 1, x, yOrigin, xOrigin, depth); break;
-					case 3: this->GenerateColorBoardRecursion(y, x - 1,yOrigin, xOrigin, depth); break;
-					default: break;
-				}
-			}
-			*/
 		}
 	}
 }
@@ -536,5 +543,13 @@ int Player::RandomizeColorTranzitions(int color) {
 	default:
 		std::cout << "\nColor value " << color << " not specified in RandomizeColorTranzitions function. Returning -1\n";
 		return -1;
+	}
+}
+void Player::DEBUG() {
+	for (int i = 0; i < mWidth; i++) {
+		for (int j = 0; j < mLength; j++) {
+			std::cout << mTiles[i][j].calculated;
+		}
+		std::cout << std::endl;
 	}
 }
