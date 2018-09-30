@@ -4,8 +4,10 @@
 
 AI::AI(){
 	Player::Player();
+	Player::PlaceShipsOnBoard();
 }
 void AI::Initialize(Player player) {
+	//generating basic shot pattern after getting player's board size parameters
 	for (int i = 0; i < player.GetWidth(); i++) {
 		if (i % 2 == 0) {
 			for (int j = 0; j < player.GetLength(); j++) {
@@ -58,14 +60,15 @@ void AI::Basic(Player&player) {
 	} while (!player.CheckIfCanShoot(y, x));
 
 	player.Shoot(y, x);
+
 	//enabling locking mode if ship was hit AND not destroyed
 	if (player.DisplayMessage().find("It's a hit!") + 1 != 0 &&
 		player.DisplayMessage().find("is destroyed!") + 1 == 0) {
 		/*
 			initializing hunting mode variables
 		*/
-		//deducting at which direction to shoot first (the one with the most water tiles in
-		//that direction (max countLength) will be chosen
+		//deducting at which direction to shoot first (the one with the most water
+		//tiles in same direction (max countLength) will be chosen
 		int countLength = 4;
 		int countWaterTiles[4] = { 0, 0, 0, 0 };
 		//North
@@ -139,8 +142,8 @@ void AI::Locking(Player &player) {
 }
 void AI::Loading(Player &player) {
 	int tempY = y, tempX = x;
-	//shoots in a line at specific direction and switches to opposite direction after
-	//ship's end is reached
+	//shoots in a line at specific direction and switches to opposite
+	//direction after ship's end is reached
 	bool canShoot = false;
 	while (!canShoot) {
 		//North
@@ -188,6 +191,7 @@ void AI::Loading(Player &player) {
 				else if (player.mBoard[tempY][i] != 2) break;
 			}
 		}
+		//shoot if last checked tile was not out of bounds and did not miss
 		if (canShoot)
 			player.Shoot(tempY, tempX);
 		//switching direction to opposite if end of the ship was reached
