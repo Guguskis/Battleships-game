@@ -139,7 +139,7 @@ void Player::DrawBothBoards(Player player, Player enemy) {
 				std::cout << "~"; break;
 			case 1:
 				player.SetColor("ship", player.mSea[i][j]);
-				std::cout << "#"; break;
+				std::cout << (char)178; break;
 			case 2:
 				player.SetColor("shipDestroyed", player.mSea[i][j]);
 				std::cout << "X"; break;
@@ -163,6 +163,82 @@ void Player::DrawBothBoards(Player player, Player enemy) {
 			case 1:
 				enemy.SetColor("water", enemy.mSea[i][j]);
 				std::cout << "~"; break;
+			case 2:
+				enemy.SetColor("shipDestroyed", enemy.mSea[i][j]);
+				std::cout << "X"; break;
+			case 3:
+				enemy.SetColor("missed", enemy.mSea[i][j]);
+				std::cout << "+"; break;
+			default: std::cout << "Tile not specified in Player.DrawBoardAll();"; break;
+			}
+		}
+		enemy.SetColor("black", 0);
+		std::cout << " " << (char)('A' + i);
+		std::cout << std::endl;
+	}
+	/*
+		BOTTOM UI PART
+	*/
+	std::cout << "      ";
+	for (int i = 0; i < player.mLength; i++)
+		std::cout << i;
+	std::cout << "             ";
+	for (int i = 0; i < enemy.mLength; i++)
+		std::cout << i;
+	std::cout << std::endl;
+}
+void Player::DrawBothBoards(Player player, Player enemy, std::string) {
+	//"     "
+	/*
+		UPPER UI PART
+	*/
+	std::cout << "   Your battlefield      Enemy battlefield\n      ";
+	for (int i = 0; i < player.mLength; i++)
+		std::cout << i;
+	std::cout << "             ";
+	for (int i = 0; i < enemy.mLength; i++)
+		std::cout << i;
+	std::cout << std::endl;
+	/*
+		MIDDLE UI PART
+	*/
+	for (int i = 0; i < player.GetLength(); i++) {
+		/*
+			MIDDLE UI LEFT SIDE
+		*/
+
+		std::cout << "    " << (char)('A' + i) << " ";
+		for (int j = 0; j < player.mLength; j++) {
+			switch (player.mBoard[i][j]) {
+			case 0:
+				player.SetColor("water", player.mSea[i][j]);
+				std::cout << "~"; break;
+			case 1:
+				player.SetColor("ship", player.mSea[i][j]);
+				std::cout << (char)178; break;
+			case 2:
+				player.SetColor("shipDestroyed", player.mSea[i][j]);
+				std::cout << "X"; break;
+			case 3:
+				player.SetColor("missed", player.mSea[i][j]);
+				std::cout << "+"; break;
+			default: std::cout << "Tile not specified in Player.DrawBoardAll();"; break;
+			}
+		}
+		player.SetColor("black", 0);
+		std::cout << " " << (char)('A' + i) << "         ";
+		/*
+			MIDDLE UI RIGHT SIDE
+		*/
+		std::cout << (char)('A' + i) << " ";
+		for (int j = 0; j < enemy.mLength; j++) {
+			switch (enemy.mBoard[i][j]) {
+			case 0:
+				enemy.SetColor("water", enemy.mSea[i][j]);
+				std::cout << "~"; break;
+			case 1:
+				enemy.SetColor("ship", enemy.mSea[i][j]);
+				std::cout << (char)178; break;
 			case 2:
 				enemy.SetColor("shipDestroyed", enemy.mSea[i][j]);
 				std::cout << "X"; break;
@@ -211,6 +287,9 @@ void Player::Shoot(int y, int x) {
 void Player::Shoot(std::string coord) {
 	std::pair<int, int> temp = StringToIntCoordsConverter(coord);
 	Shoot(temp.first, temp.second);
+}
+void Player::ShootAt(Player &player, int y, int x) {
+	player.Shoot(y, x);
 }
 void Player::ShootAt(Player &player, std::string coords) {
 	player.Shoot(coords);
@@ -466,6 +545,9 @@ void Player::GenerateSea(bool animate, std::string message) {
 
 	cursorInfo.bVisible = true; // set the cursor visibility
 	SetConsoleCursorInfo(out, &cursorInfo);
+}
+void Player::InstaKill() {
+	mShipCounter = 0;
 }
 void Player::DEBUG() {
 	for (int i = 0; i < mWidth; i++) {

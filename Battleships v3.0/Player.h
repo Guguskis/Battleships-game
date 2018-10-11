@@ -48,6 +48,7 @@ public:
 	void DrawYourBoard();
 	void DrawEnemyBoard();
 	static void DrawBothBoards(Player, Player);
+	static void DrawBothBoards(Player, Player, std::string);
 	void SetColor(std::string, int);	//supporting method that changes current tile's color
 	//cheking if input is valid
 	bool CheckIfCanShoot(int, int);
@@ -55,6 +56,7 @@ public:
 	//shoot logic
 	void Shoot(int, int);	//main logic
 	void Shoot(std::string);	//converting input from string to int and then calling Shoot();
+	void ShootAt(Player&, int, int);
 	void ShootAt(Player &, std::string);	//added for clarity when calling Shoot method from outside of class
 	//handling message system
 	std::string DisplayMessage();
@@ -72,6 +74,7 @@ public:
 	std::pair<int, int> StringToIntCoordsConverter(std::string);	//supporting function to convert input
 	//generate and animate topography
 	void GenerateSea(bool, std::string);
+	void InstaKill();
 	void DEBUG();
 private:
 
