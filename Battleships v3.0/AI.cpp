@@ -48,7 +48,7 @@ void AI::Basic(Player&player) {
 			x = basicShotComm[0][commandIndex].second;
 			basicShotComm[0].erase(basicShotComm[0].begin() + commandIndex);
 		}
-		else {
+		else if (basicShotComm[1].size() != 0) {
 			/*Aiming pattern:
 				.x.x.x.
 				x.x.x.x		*/
@@ -56,6 +56,14 @@ void AI::Basic(Player&player) {
 			y = basicShotComm[1][commandIndex].first;
 			x = basicShotComm[1][commandIndex].second;
 			basicShotComm[1].erase(basicShotComm[1].begin() + commandIndex);
+		}
+		else {
+			int x, y;
+			
+			do {
+				x = rand() % player.GetLength();
+				y = rand() % player.GetWidth();
+			} while (player.CheckIfCanShoot(y, x));
 		}
 	} while (!player.CheckIfCanShoot(y, x));
 

@@ -145,7 +145,7 @@ void Player::DrawBothBoards(Player player, Player enemy) {
 				std::cout << "X"; break;
 			case 3:
 				player.SetColor("missed", player.mSea[i][j]);
-				std::cout << "+"; break;
+				std::cout << (char)176; break;
 			default: std::cout << "Tile not specified in Player.DrawBoardAll();"; break;
 			}
 		}
@@ -168,7 +168,7 @@ void Player::DrawBothBoards(Player player, Player enemy) {
 				std::cout << "X"; break;
 			case 3:
 				enemy.SetColor("missed", enemy.mSea[i][j]);
-				std::cout << "+"; break;
+				std::cout << (char)176; break;
 			default: std::cout << "Tile not specified in Player.DrawBoardAll();"; break;
 			}
 		}
@@ -206,7 +206,6 @@ void Player::DrawBothBoards(Player player, Player enemy, std::string) {
 		/*
 			MIDDLE UI LEFT SIDE
 		*/
-
 		std::cout << "    " << (char)('A' + i) << " ";
 		for (int j = 0; j < player.mLength; j++) {
 			switch (player.mBoard[i][j]) {
@@ -221,7 +220,7 @@ void Player::DrawBothBoards(Player player, Player enemy, std::string) {
 				std::cout << "X"; break;
 			case 3:
 				player.SetColor("missed", player.mSea[i][j]);
-				std::cout << "+"; break;
+				std::cout << (char)176; break;
 			default: std::cout << "Tile not specified in Player.DrawBoardAll();"; break;
 			}
 		}
@@ -244,7 +243,7 @@ void Player::DrawBothBoards(Player player, Player enemy, std::string) {
 				std::cout << "X"; break;
 			case 3:
 				enemy.SetColor("missed", enemy.mSea[i][j]);
-				std::cout << "+"; break;
+				std::cout << (char)176; break;
 			default: std::cout << "Tile not specified in Player.DrawBoardAll();"; break;
 			}
 		}
